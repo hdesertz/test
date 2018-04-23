@@ -166,6 +166,8 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
         App\Providers\LogHelperServiceProvider::class, //日志改造类provider
+        Way\Generators\GeneratorsServiceProvider::class,
+        Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
     ],
 
     /*
