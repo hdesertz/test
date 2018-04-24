@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Record;
 
 use App\Helpers\HttpRequest;
@@ -10,13 +11,14 @@ use App\Models\SecurityBack;
 use App\Models\SecurityFront;
 use Illuminate\Http\Request;
 use LogHelper;
+use Illuminate\Database\Query\Expression as raw;
 
 class SecurityController extends BaseController
 {
 
     private $request;
     private $ip;
-    private $url;
+    private $used_city;
     private $last_ip;
     private $last_city;
 
@@ -33,12 +35,13 @@ class SecurityController extends BaseController
 
     public function __construct(Request $request)
     {
-        $this->url = $request->getUri();
-        $this->ip = $request->getClientIp();
-        $this->ip == '127.0.0.1' && $this->ip = '101.81.124.182';  //临时测试
+
+        //设置白名单，但不知道我们服务器的iP地址
+        $ip = $request->getClientIp();
         $this->request = $request->input();
         $input = $this->request;
-        LogHelper::log('login',$input);
+        $this->ip = $input['ip'];
+        LogHelper::log('login', $input);
 
         if (!isset($input['user_id']) || !isset($input['address'])) {
             return $this->sendError(10001);
@@ -46,24 +49,79 @@ class SecurityController extends BaseController
         if (!isset(self::$address[$input['address']])) {
             return $this->sendError(10002);
         }
-
     }
+
+
     /**
-     * prams str ip
-     * prams str address (1前台2后台)
-     * prams str user_id (前台是用户id或者手机号 后台为工号或者手机号)
-     * prams str password
-     * prams str pass_is_true
-     * prams str platform（哪一个网站）
-     * prams str refer
-     * return mixd
-     * @auth hezhi
-     * date 2018/4/20 上午10:51
+     * @SWG\Post(path="/v1/login/record",
+     *   tags={"Security"},
+     *   summary="用户登录安全记录",
+     *   description="",
+     *   operationId="record",
+     *   @SWG\Parameter(
+     *     name="address",
+     *     in="query",
+     *     description="1前台2后台",
+     *     required=true,
+     *     type="string",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="user_id",
+     *     in="query",
+     *     description="用户Id",
+     *     required=true,
+     *     type="string",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="ip",
+     *     in="query",
+     *     description="用户客户端IP",
+     *     required=true,
+     *     type="string",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="refer",
+     *     in="query",
+     *     description="客户端用户来源",
+     *     required=true,
+     *     type="string",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="platform",
+     *     in="query",
+     *     description="哪一个网站",
+     *     required=true,
+     *     type="string",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="pass_is_true",
+     *     in="query",
+     *     description="1为正确2为错误",
+     *     required=true,
+     *     type="string",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="password",
+     *     in="query",
+     *     description="暂时不用传",
+     *     required=false,
+     *     type="string",
+     *   ),
+     *   @SWG\Response(response=200,description="successful operation"),
+     * )
      */
-    //统一入口
     public function record()
     {
         $input = $this->request;
+        //获取常用地
+        $ret = SecurityAction::whereAddress($input['address'])->
+        whereUserId($input['user_id'])->
+        where('city', '<>', '未知')->
+        groupBy('city')->
+        having('sum', '>=', env('USED_EFFECTIVE', 3))
+            ->select(new raw('count(*) as sum'), 'city')->get()->toArray();
+        $this->used_city = array_column($ret, 'city');
+
         if (self::$address[$input['address'] == self::ADD_FRONT]) {
             return $this->securityRecordFromFront();
         } else {
@@ -101,8 +159,8 @@ class SecurityController extends BaseController
         $sec_fro->ip = ip2long($this->ip);
         $sec_fro->city = $city;
         $sec_fro->login_time = date('Y-m-d H:i:s');
-        $sec_fro->password = md5($input['password'] ?? '');
-        $sec_fro->login_count ++;
+//        $sec_fro->password = md5($input['password'] ?? '');
+        $sec_fro->login_count++;
         $sec_fro->platform = $input['platform'] ?? '';
         $sec_fro->refer = $input['refet'] ?? '';
         $sec_fro->save();
@@ -123,7 +181,7 @@ class SecurityController extends BaseController
 
         if ($exitst == 1) {
             //进行异常状态分析
-            $this->isNormal($sec_fro,$city,$user_id);
+            $this->isNormal($sec_fro, $city, $user_id);
         }
 
     }
@@ -145,7 +203,7 @@ class SecurityController extends BaseController
         $exitst = 1;
         if (!$sec_bac) {
             $sec_bac = new SecurityBack();
-            $sec_bac->admin_id= $admin_id;
+            $sec_bac->admin_id = $admin_id;
             $sec_bac->save();
             $exitst = 0;
         }
@@ -159,8 +217,8 @@ class SecurityController extends BaseController
         $sec_bac->ip = ip2long($this->ip);
         $sec_bac->city = $city;
         $sec_bac->login_time = date('Y-m-d H:i:s');
-        $sec_bac->password = md5($input['password'] ?? '');
-        $sec_bac->login_count ++;
+//        $sec_bac->password = md5($input['password'] ?? '');
+        $sec_bac->login_count++;
         $sec_bac->platform = $input['platform'] ?? '';
         $sec_bac->refer = $input['refet'] ?? '';
         $sec_bac->save();
@@ -181,30 +239,25 @@ class SecurityController extends BaseController
 
         if ($exitst == 1) {
             //进行异常状态分析
-            $this->isNormal($sec_bac,$city,$admin_id);
+            $this->isNormal($sec_bac, $city, $admin_id);
         }
     }
 
 
-    private function isNormal($sec, $city,$user_id)
+    private function isNormal($sec, $city, $user_id)
     {
         $input = $this->request;
 
         //异地登录
-        if ($this->last_city != $city) {
+        if (!in_array($city, $this->used_city)) {
             //回调通知
-            \Queue::push(new EzSeCallback(EzSeCallback::REMOTE_LOGIN,$user_id),'','security');
-        }
-        //密码过于简单
-        if (preg_match("/^[0-9]*$/", $input['password'])) {
-            //回调通知
-            \Queue::push(new EzSeCallback(EzSeCallback::EAZY_PASS,$user_id),'','security');
+            \Queue::push(new EzSeCallback(EzSeCallback::REMOTE_LOGIN, $user_id), '', 'security');
         }
         //密码连续错误次数
         $count = SecurityAction::whereAddress($input['address'])->whereUserId($user_id)->where('created_at', '>=', date('Y-m-d H:i:s', time() - 3600))->where('created_at', '<=', date('Y-m-d H:i:s'))->wherePassIsTrue(SecurityAction::PASS_FALSE)->count();
         if ($count > env('MAX_ERROR_COUNTS', 3)) {
             //回调通知
-            \Queue::push(new EzSeCallback(EzSeCallback::MANY_TIMES,$user_id),'','security');
+            \Queue::push(new EzSeCallback(EzSeCallback::MANY_TIMES, $user_id), '', 'security');
         };
 
     }
@@ -216,14 +269,13 @@ class SecurityController extends BaseController
         $param['ip'] = $ip;
         $param['ak'] = self::BD_AK;
         $url_param = http_build_query($param);
-        $url = self::BD_IP.$url_param;
+        $url = self::BD_IP . $url_param;
         $ret = HttpRequest::get($url);
-        \Log::info('百度iP'.$ret);
+//        \Log::info('百度iP'.$ret);
         $ret = json_decode($ret);
-        if(isset($ret->status) && $ret->status == 0) return $ret->content->address_detail->city;
+        if (isset($ret->status) && $ret->status == 0) return $ret->content->address_detail->city;
         return '未知';
-
-
     }
+
 
 }

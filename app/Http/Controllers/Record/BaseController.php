@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 
 class BaseController extends Controller
 {
+    /**
+     * @SWG\Info(title="My First API", version="0.1")
+     */
     public static function sendResponse($data = '', $popCode = 1, $popType = 1)
     {
         $return = array();
