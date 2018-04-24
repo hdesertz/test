@@ -1,0 +1,76 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "My API",
+        "version": "0.1"
+    },
+    "paths": {
+        "api/v1/login/record": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "\u7528\u6237\u767b\u5f55\u5b89\u5168\u8bb0\u5f55",
+                "description": "",
+                "operationId": "record",
+                "parameters": [
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "1\u524d\u53f02\u540e\u53f0",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "\u7528\u6237Id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "ip",
+                        "in": "query",
+                        "description": "\u7528\u6237\u5ba2\u6237\u7aefIP",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "refer",
+                        "in": "query",
+                        "description": "\u5ba2\u6237\u7aef\u7528\u6237\u6765\u6e90",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "platform",
+                        "in": "query",
+                        "description": "\u54ea\u4e00\u4e2a\u7f51\u7ad9",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "pass_is_true",
+                        "in": "query",
+                        "description": "1\u4e3a\u6b63\u786e2\u4e3a\u9519\u8bef",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "\u6682\u65f6\u4e0d\u7528\u4f20",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {}
+}
