@@ -53,7 +53,7 @@ class SecurityController extends BaseController
 
 
     /**
-     * @SWG\Post(path="/v1/login/record",
+     * @SWG\Post(path="api/v1/login/record",
      *   tags={"Security"},
      *   summary="用户登录安全记录",
      *   description="",
