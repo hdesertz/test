@@ -53,14 +53,14 @@ class SecurityController extends BaseController
 
 
     /**
-     * @SWG\Post(path="api/v1/login/record",
+     * @SWG\Post(path="/api/v1/login/record",
      *   tags={"Security"},
      *   summary="用户登录安全记录",
      *   description="",
      *   operationId="record",
      *   @SWG\Parameter(
      *     name="address",
-     *     in="query",
+     *     in="query",`
      *     description="1前台2后台",
      *     required=true,
      *     type="string",
