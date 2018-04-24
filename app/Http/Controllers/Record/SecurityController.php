@@ -60,7 +60,7 @@ class SecurityController extends BaseController
      *   operationId="record",
      *   @SWG\Parameter(
      *     name="address",
-     *     in="query",`
+     *     in="query",
      *     description="1前台2后台",
      *     required=true,
      *     type="string",
