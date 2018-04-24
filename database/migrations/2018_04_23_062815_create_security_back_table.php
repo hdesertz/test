@@ -22,7 +22,6 @@ class CreateSecurityBackTable extends Migration {
 			$table->boolean('login_count')->comment('登录次数');
 			$table->string('platform', 20)->default('')->comment('平台');
 			$table->string('city', 20)->default('')->comment('当前城市');
-			$table->integer('refer')->comment('refer');
 		});
 	}
 

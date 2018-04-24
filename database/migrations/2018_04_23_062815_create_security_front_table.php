@@ -22,7 +22,6 @@ class CreateSecurityFrontTable extends Migration {
 			$table->boolean('login_count')->default(0)->comment('登录次数');
 			$table->string('platform', 20)->default('')->comment('平台');
 			$table->string('city', 20)->default('')->comment('当前城市');
-			$table->string('refer', 80)->default('')->comment('refer');
 		});
 	}
 

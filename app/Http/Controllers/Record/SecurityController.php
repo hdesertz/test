@@ -162,7 +162,6 @@ class SecurityController extends BaseController
 //        $sec_fro->password = md5($input['password'] ?? '');
         $sec_fro->login_count++;
         $sec_fro->platform = $input['platform'] ?? '';
-        $sec_fro->refer = $input['refet'] ?? '';
         $sec_fro->save();
 
         $security_action = new SecurityAction();
@@ -220,7 +219,6 @@ class SecurityController extends BaseController
 //        $sec_bac->password = md5($input['password'] ?? '');
         $sec_bac->login_count++;
         $sec_bac->platform = $input['platform'] ?? '';
-        $sec_bac->refer = $input['refet'] ?? '';
         $sec_bac->save();
 
         $security_action = new SecurityAction();
