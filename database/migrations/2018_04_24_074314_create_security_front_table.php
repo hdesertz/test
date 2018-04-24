@@ -19,9 +19,10 @@ class CreateSecurityFrontTable extends Migration {
 			$table->integer('ip')->nullable()->comment('当前ip');
 			$table->timestamp('login_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('当前时间');
 			$table->string('password', 40)->default('')->comment('密码');
-			$table->boolean('login_count')->default(0)->comment('登录次数');
-			$table->string('platform', 255)->default('')->comment('平台');
+			$table->tinyInteger('login_count')->default(0)->comment('登录次数');
+			$table->string('platform')->default('')->comment('平台');
 			$table->string('city', 20)->default('')->comment('当前城市');
+			$table->string('refer', 80)->default('')->comment('refer');
 		});
 	}
 
