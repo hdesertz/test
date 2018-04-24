@@ -42,7 +42,6 @@ class SecurityBack extends Eloquent
 		'admin_id' => 'int',
 		'ip' => 'int',
 		'login_count' => 'int',
-		'refer' => 'int'
 	];
 
 	protected $dates = [
@@ -61,6 +60,5 @@ class SecurityBack extends Eloquent
 		'login_count',
 		'platform',
 		'city',
-		'refer'
 	];
 }

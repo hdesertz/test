@@ -42,7 +42,6 @@ class SecurityFront extends Eloquent
 		'user_id' => 'int',
 		'ip' => 'int',
 		'login_count' => 'int',
-		'refer' => 'int'
 	];
 
 	protected $dates = [
@@ -61,6 +60,5 @@ class SecurityFront extends Eloquent
 		'login_count',
 		'platform',
 		'city',
-		'refer'
 	];
 }

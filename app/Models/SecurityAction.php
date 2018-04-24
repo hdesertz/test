@@ -56,7 +56,7 @@ class SecurityAction extends Eloquent
 		'ip' => 'int',
 		'login_count' => 'int',
 		'pass_is_true' => 'int',
-		'refer' => 'int'
+		'refer' => 'string'
 	];
 
 	protected $hidden = [
