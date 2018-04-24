@@ -21,10 +21,10 @@ class CreateSecurityActionTable extends Migration {
 			$table->integer('ip')->comment('当前ip');
 			$table->boolean('login_count')->comment('登录次数');
 			$table->boolean('pass_is_true')->comment('(1正确2错误)');
-			$table->string('platform', 20)->default('')->comment('平台');
+			$table->string('platform', 255)->default('')->comment('平台');
 			$table->string('last_city', 20)->nullable()->default('')->comment('上次登录城市');
 			$table->string('city', 20)->default('')->comment('当前城市');
-			$table->string('refer', 80)->default('')->comment('refer');
+			$table->string('refer', 255)->default('')->comment('refer');
 			$table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('创建时间');
 		});
 	}
