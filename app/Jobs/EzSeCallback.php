@@ -8,7 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Silber\Bouncer\Helpers;
+use LogHelper;
 
 class EzSeCallback implements ShouldQueue
 {
@@ -16,7 +16,6 @@ class EzSeCallback implements ShouldQueue
 
     const REMOTE_LOGIN = 1;
     const MANY_TIMES= 2;
-    const EAZY_PASS = 3;
 
     protected $user_id;
 
@@ -25,7 +24,6 @@ class EzSeCallback implements ShouldQueue
     protected $msg = [
         self::REMOTE_LOGIN => '异地登录',
         self::MANY_TIMES => '错误次数过多',
-        self::EAZY_PASS => '密码过于简单',
     ];
     /**
      * Create a new job instance.
@@ -48,11 +46,7 @@ class EzSeCallback implements ShouldQueue
      */
     public function handle()
     {
-        $url = 'xxx';
-        //进行回call
-        $param['user_id'] = $this->user_id;
-        $param['code'] = $this->code;
-        $param['msg'] = $this->msg[$this->code];
-//        HttpRequest::post($url,$param);
+        //暂时没有回调，暂时记录
+        LogHelper::log('exception_login', [$this->user_id,$this->msg[$this->code]]);
     }
 }
